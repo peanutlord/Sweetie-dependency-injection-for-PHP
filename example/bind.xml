@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sweetie>
+    <option key="injector" value="Sweetie\Injector\Magic" />
+    
+    <bindings>
+        <blueprint id="stubTest" name="Foo">
+            <!-- 
+                @todo We need events for the property binding, because the property
+                may also have dependencies which need to be injected
+            -->
+            <property name="bar" ref="Bar" />
+        </blueprint>
+    </bindings>
+    
+</sweetie>
