@@ -49,7 +49,7 @@ abstract class Reader
      */
     public function getClassBindings($id)
     {
-        if (!isset($this->_blueprints[$id])) {
+        if (!isset($this->_bindings[$id])) {
             $message = sprintf('Unknown ID "%s"', $id);
             throw new \InvalidArgumentException($message);
         }

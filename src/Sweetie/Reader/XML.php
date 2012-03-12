@@ -61,7 +61,7 @@ class XML extends Reader
                 $properties[(string) $row['name']] = (string) $row['ref'];
             }
 
-            $this->_bindings[$id] = new ClassBindings((string) $blueprint['name'],
+            $this->_bindings[$id] = new ClassBindings((string) $blueprint['class'],
                                                       $properties);
         }
 
