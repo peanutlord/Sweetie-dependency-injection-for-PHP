@@ -124,6 +124,37 @@ abstract class Injector
     }
 
     /**
+     * Returns a blueprint dependency by reference name
+     *
+     * @param string $reference blueprint reference, either class or id
+     */
+    protected function _getReferenceWithDependencies($reference)
+    {
+        if (!$this->_isIDReference($reference)) {
+            return new $reference();
+        }
+
+        // We load the id via binder
+        $id = $this->_getIDFromReference($reference);
+
+        // Add ids to a stack to prevent ids, which are referencing
+        // itself, to create a endless loop
+        if ($this->_stackContainsID($id)) {
+            // Purge the stacks
+            $this->_clearIDStack();
+
+            $message = sprintf('Reference-ID %s references itself', $id);
+            throw new \InvalidArgumentException($message);
+        }
+
+        $this->_pushToIDStack($id);
+        $bindObject = $this->_getBinder()->create($id);
+        $this->_popFromIDStack($id);
+
+        return $bindObject;
+    }
+
+    /**
      * Takes a ClassBindings object and injects the references
      * into all properties
      *
