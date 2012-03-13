@@ -20,9 +20,11 @@ class ClassBindingsTest extends PHPUnit_Framework_TestCase
      */
     public function testStoresInformation()
     {
-        $binding = new ClassBindings('Foo', array('bar' => 'Bar'));
+        $binding = new ClassBindings('someId', 'Foo');
+        $binding->addProperty('bar', 'Bar');
 
-        $this->assertEquals('Foo', $binding->getClass());
+        $this->assertEquals('someId', $binding->getId());
+        $this->assertEquals('Foo', $binding->getClassName());
         $this->assertContains('bar', $binding->getProperties());
         $this->assertEquals('Bar', $binding->getReference('bar'));
     }

@@ -22,6 +22,13 @@ class ClassBindings
     protected $_className = '';
 
     /**
+     * Holds the ID of the binding (assigned in the blueprint id)
+     *
+     * @var string
+     */
+    protected $_id = '';
+
+    /**
      * Holds the properties which shall be bound to a reference
      *
      * @var string[]
@@ -31,22 +38,32 @@ class ClassBindings
     /**
      * Creates an class binding object
      *
+     * @param string $id
      * @param string $className
-     * @param array $properties key value pair hash map (property => reference)
      */
-    public function __construct($className, $properties)
+    public function __construct($id, $className)
     {
+        $this->_id = $id;
         $this->_className = $className;
-        $this->_properties = $properties;
     }
 
     /**
      *
      * @return string
      */
-    public function getClass()
+    public function getClassName()
     {
         return $this->_className;
+    }
+
+    /**
+     * Returns the id of the class binding
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->_id;
     }
 
     /**
@@ -57,6 +74,19 @@ class ClassBindings
     public function getProperties()
     {
         return array_keys($this->_properties);
+    }
+
+    /**
+     * Adds a property to the binding
+     *
+     * @param string $name
+     * @param string $reference
+     *
+     * @return void
+     */
+    public function addProperty($name, $reference)
+    {
+        $this->_properties[$name] = $reference;
     }
 
     /**

@@ -24,3 +24,7 @@ Binder::boostrap($reader);
 /* @var $foo Foo */
 $foo = Binder::factory('stubTest');
 echo $foo->getBar()->sayHello();
+
+/* @var $foo2 Foo */
+$foo = Binder::factory('stubTest2');
+echo $foo->getBar()->sayHello();

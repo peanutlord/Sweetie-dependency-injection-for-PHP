@@ -52,17 +52,18 @@ class XML extends Reader
 
             $id = (string) $blueprint['id'];
             if (isset($this->_bindings[$id])) {
-                $message = sprintf('ID "%s" already taken!', $id);
+                $message = sprintf('Cannot redeclare ID "%s"!', $id);
                 throw new \InvalidArgumentException($message);
             }
 
-            $properties = array();
-            foreach ($set->xpath('//property') as $row) {
-                $properties[(string) $row['name']] = (string) $row['ref'];
+            $binding = new ClassBindings($id, (string) $blueprint['class']);
+
+            $path = sprintf('//blueprint[@id="%s"]//property', $id);
+            foreach ($set->xpath($path) as $row) {
+                $binding->addProperty((string) $row['name'], (string) $row['ref']);
             }
 
-            $this->_bindings[$id] = new ClassBindings((string) $blueprint['class'],
-                                                      $properties);
+            $this->_bindings[$id] = $binding;
         }
 
         foreach ($xml->xpath('//sweetie//option') as $option) {

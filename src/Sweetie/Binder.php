@@ -30,6 +30,13 @@ class Binder
     protected $_reader = null;
 
     /**
+     * Holds the default injector
+     *
+     * @var Sweetie\Injector
+     */
+    protected $_defaultInjector = null;
+
+    /**
      * Configures the class to work properly
      *
      * @return void
@@ -40,6 +47,18 @@ class Binder
         if (static::$_instance === null) {
             static::$_instance = new self($reader);
         }
+
+        return static::$_instance;
+    }
+
+    /**
+     * Resets the instance of the Binder
+     *
+     * @return void
+     */
+    public static function resetInstance()
+    {
+        static::$_instance = null;
     }
 
     /**
@@ -74,10 +93,7 @@ class Binder
 
         $bindings = $this->_reader->getClassBindings($id);
 
-        // @todo perhaps could the blueprint define its own injector to enable
-        // difference injectors per blueprint
         $injector = $this->_getInjector();
-
         return $injector->inject($bindings);
     }
 
@@ -88,14 +104,15 @@ class Binder
      */
     protected function _getInjector()
     {
-        // Load injector by option
-        $injectorName = $this->_reader->getOption('injector', 'Sweetie\Injector\Magic');
+        if ($this->_defaultInjector === null) {
+            // The XML holds an option which one of the injectors the default one it
+            $injectorName = $this->_reader->getOption('injector', 'Sweetie\Injector\Magic');
 
-        /* @var $injector \Sweetie\Injector */
-        $injector = new $injectorName();
+            // @todo check type
+            $this->_defaultInjector = new $injectorName($this);
+        }
 
-        // @todo check type of injector
-        return $injector;
+        return $this->_defaultInjector;
     }
 
 

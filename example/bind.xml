@@ -3,11 +3,14 @@
     <option key="injector" value="Sweetie\Injector\Magic" />
     
     <bindings>
+        <!-- With ID referencing -->
+        <blueprint id="Bar" class="Bar" />
         <blueprint id="stubTest" class="Foo">
-            <!-- 
-                @todo We need events for the property binding, because the property
-                may also have dependencies which need to be injected
-            -->
+            <property name="bar" ref="@id:Bar" />
+        </blueprint>
+        
+        <!-- No ID Referencing -->
+        <blueprint id="stubTest2" class="Foo">
             <property name="bar" ref="Bar" />
         </blueprint>
     </bindings>

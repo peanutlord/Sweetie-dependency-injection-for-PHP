@@ -15,17 +15,14 @@ class XMLTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * Write the XML (needs only once)
      *
-     * @return void
+     * @see PHPUnit_Framework_TestCase::setUp()
      */
-    public function __construct()
+    public function setUp()
     {
         $xml = <<< XML
 <?xml version="1.0" encoding="UTF-8"?>
 <sweetie>
-    <option key="injector" value="Sweetie\Injector\Magic" />
-
     <bindings>
         <blueprint id="stubTest" class="Foo">
             <property name="bar" ref="Bar" />
@@ -34,7 +31,28 @@ class XMLTest extends PHPUnit_Framework_TestCase
 
 </sweetie>
 XML;
-        file_put_contents('/tmp/bind.xml', $xml);
+        $this->_writeXML($xml);
+    }
+
+    /**
+     *
+     * @see PHPUnit_Framework_TestCase::tearDown()
+     */
+    public function tearDown()
+    {
+       @unlink('/tmp/bind.xml');
+    }
+
+    /**
+     * Writes the XML into a file
+     *
+     * @param string $data
+     *
+     * @return void
+     */
+    protected function _writeXML($data)
+    {
+        file_put_contents('/tmp/bind.xml', $data);
     }
 
     /**
@@ -71,7 +89,7 @@ XML;
 
         $binding = $reader->getClassBindings('stubTest');
 
-        $this->assertEquals('Foo', $binding->getClass());
+        $this->assertEquals('Foo', $binding->getClassName());
         $this->assertContains('bar', $binding->getProperties());
         $this->assertEquals('Bar', $binding->getReference('bar'));
     }
@@ -85,9 +103,7 @@ XML;
         $xml = <<< XML
 <?xml version="1.0" encoding="UTF-8"?>
 <sweetie>
-    <option key="injector" value="Sweetie\Injector\Magic" />
-
-    <bindings>
+	<bindings>
         <blueprint id="stubTest" class="Foo">
             <property name="bar" ref="Bar" />
         </blueprint>
@@ -98,7 +114,7 @@ XML;
 
 </sweetie>
 XML;
-        file_put_contents('/tmp/bind.xml', $xml);
+        $this->_writeXML($xml);
 
         $this->setExpectedException('InvalidArgumentException');
 
