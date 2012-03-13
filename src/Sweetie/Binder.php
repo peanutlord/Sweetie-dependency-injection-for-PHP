@@ -74,14 +74,28 @@ class Binder
 
         $bindings = $this->_reader->getClassBindings($id);
 
-        // Load injector by option
         // @todo perhaps could the blueprint define its own injector to enable
         // difference injectors per blueprint
+        $injector = $this->_getInjector();
+
+        return $injector->inject($bindings);
+    }
+
+    /**
+     * Returns the default injector
+     *
+     * @return Injector
+     */
+    protected function _getInjector()
+    {
+        // Load injector by option
         $injectorName = $this->_reader->getOption('injector', 'Sweetie\Injector\Magic');
 
         /* @var $injector \Sweetie\Injector */
         $injector = new $injectorName();
-        return $injector->inject($bindings);
+
+        // @todo check type of injector
+        return $injector;
     }
 
 
