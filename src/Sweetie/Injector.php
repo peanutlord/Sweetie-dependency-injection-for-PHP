@@ -127,8 +127,10 @@ abstract class Injector
      * Returns a blueprint dependency by reference name
      *
      * @param string $reference blueprint reference, either class or id
+     *
+     * @return object
      */
-    protected function _getReferenceWithDependencies($reference)
+    protected function _getDependencyFromReference($reference)
     {
         if (!$this->_isIDReference($reference)) {
             return new $reference();
