@@ -1,0 +1,61 @@
+================================================================
+What is Sweetie?
+================================================================
+
+Sweetie is a PHP dependency Framework which uses XML to configure the 
+dependencies within an object. Though are not limited to XML, due the ability 
+to set a specific reader, no other reader is provided at the moment.
+
+================================================================
+Why another dependency injection framework?
+================================================================
+
+I just wanted to write one - its as simple as that.
+
+================================================================
+Features
+================================================================
+
+Sweetie is just at the beginning, thus the features are limited and sometimes a 
+bit unstable. Sweetie uses so called "blueprints", a "plan" about a object and 
+its dependencies, to bind other objects to its properties as defined. A blueprint 
+always needs a unique id and a class. A property inside a blueprint must define the 
+name of the property and its class or the ID of another blueprint. The latter one 
+gives you the ability to create objects with dependencies and inject them as 
+dependency themself into others.
+
+Here is a little sample:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<sweetie>
+    <option key="injector" value="Sweetie\Injector\Magic" />
+    
+    <bindings>
+        <!-- This blueprint cant even afford properties... -->
+        <blueprint id="Bar" class="Bar" />
+        
+        <!-- With ID referencing -->
+        <blueprint id="stubTest" class="Foo">
+            <property name="bar" ref="@id:Bar" />
+        </blueprint>
+        
+        <!-- No ID Referencing -->
+        <blueprint id="stubTest2" class="Foo">
+            <property name="bar" ref="Bar" />
+        </blueprint>
+    </bindings>
+    
+</sweetie>
+
+Note that stubTest uses @id:Bar in its ref attribute. Thats a reference to the 
+blueprint id, while stubTest2 uses the classes directly. Sweetie prevents that 
+ids may reference themself, even over large ID-injections. So if stubTest1 references 
+stubTest2, which uses stubTest3, which on the other hand references stubTest1, 
+Sweetie will throw an exception and tell you its wrong.
+The "option" tags let you define various settings for sweetie. Right at the 
+moment there is only an option to set the injector which is used.
+
+Sweetie uses "Injectors" to inject dependencies into objects. At the moment only 
+a "Magic injector" is provided, which uses reflection to set the properties 
+of the class. There are a __construct() injector and method injector planned, 
+but other features go first like enabling factorys and blueprint parents.
