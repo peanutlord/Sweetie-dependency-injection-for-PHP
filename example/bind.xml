@@ -3,8 +3,10 @@
     <option key="injector" value="Sweetie\Injector\Magic" />
     
     <bindings>
-        <!-- With ID referencing -->
+        <!-- This blueprint cant even afford properties... -->
         <blueprint id="Bar" class="Bar" />
+        
+        <!-- With ID referencing -->
         <blueprint id="stubTest" class="Foo">
             <property name="bar" ref="@id:Bar" />
         </blueprint>

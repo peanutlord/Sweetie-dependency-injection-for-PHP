@@ -33,7 +33,6 @@ class Magic extends Injector
                 $property->setAccessible(true);
             }
 
-            // A reference may also be an ID (prefix: @id)
             $reference = $bindings->getReference($name);
             $bindObject = $this->_getDependencyFromReference($reference);
 

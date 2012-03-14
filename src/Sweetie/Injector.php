@@ -132,6 +132,7 @@ abstract class Injector
      */
     protected function _getDependencyFromReference($reference)
     {
+        // A reference may also be an ID (prefix: @id)
         if (!$this->_isIDReference($reference)) {
             return new $reference();
         }

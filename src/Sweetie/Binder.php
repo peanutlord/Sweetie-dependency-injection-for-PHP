@@ -105,7 +105,7 @@ class Binder
     protected function _getInjector()
     {
         if ($this->_defaultInjector === null) {
-            // The XML holds an option which one of the injectors the default one it
+            // The XML holds an option which one of the injectors is the default one
             $injectorName = $this->_reader->getOption('injector', 'Sweetie\Injector\Magic');
 
             // @todo check type
