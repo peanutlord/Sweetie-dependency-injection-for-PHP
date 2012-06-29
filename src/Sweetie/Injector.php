@@ -4,6 +4,8 @@
 // +----------------------------------------------------------+
 
 namespace Sweetie;
+use Sweetie\Blueprint\Property;
+
 use Sweetie\Binder;
 
 /**
@@ -52,39 +54,24 @@ abstract class Injector
     }
 
     /**
-     * Returns a blueprint dependency by reference name
+     * Returns a dependency defined the blueprint
      *
-     * @param string $ref blueprint reference, either class or id
+     * @param Sweetie\Blueprint\Property
      *
      * @return object
      */
-    protected function _getDependencyFromReference($ref)
+    protected function _getDependency(Property $property)
     {
-        if (!$this->_blueprint->isIdReference($ref)) {
-            return new $ref();
+        if (!$property->isIdReference()) {
+            $reference = $property->getReference();
+            return new $reference();
         }
 
         // We are safe here, Reader has already taken care of cyclic dependencies
-        $id = $this->_blueprint->getIdFromReference($ref);
-        $objectToBind = $this->_getBinder()->create($id);
-
-        return $objectToBind;
+        $id = $property->getIdFromReference();
+        return $this->_getBinder()->create($id);
     }
 
-    /**
-     * Injects the references into the objects
-     *
-     * @todo dislike, see todo from blueprint::isIdReference
-     *
-     * @param Blueprint $blueprint
-     *
-     * @return object
-     */
-    public function inject(Blueprint $blueprint)
-    {
-        $this->_blueprint = $blueprint;
-        return $this->_doInject($blueprint);
-    }
 
     /**
      * Takes a ClassBindings object and injects the references
@@ -94,6 +81,6 @@ abstract class Injector
      *
      * @return object
      */
-    protected abstract function _doInject(Blueprint $blueprint);
+    public abstract function inject(Blueprint $blueprint);
 
 }

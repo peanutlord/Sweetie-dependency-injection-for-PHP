@@ -21,24 +21,24 @@ use Sweetie\Injector;
 class Magic extends Injector
 {
 	/**
-     * @see Sweetie.Injector::_doInject()
+     * @see Sweetie.Injector::inject()
      */
-    protected function _doInject(Blueprint $blueprint)
+    public function inject(Blueprint $blueprint)
     {
         $class = $blueprint->getClass();
         $actualObject = new $class();
 
         $reflection = new \ReflectionObject($actualObject);
-        foreach ($blueprint as $name => $ref) {
-            /* @var $property ReflectionProperty */
-            $property = $reflection->getProperty($name);
+        foreach ($blueprint as $blueprintProperty) {
+            /* @var $reflectionProperty ReflectionProperty */
+            $reflectionProperty = $reflection->getProperty($blueprintProperty->getName());
 
-            if (!$property->isPublic()) {
-                $property->setAccessible(true);
+            if (!$reflectionProperty->isPublic()) {
+                $reflectionProperty->setAccessible(true);
             }
 
-            $objectToBind = $this->_getDependencyFromReference($ref);
-            $property->setValue($actualObject, $objectToBind);
+            $objectToBind = $this->_getDependency($blueprintProperty);
+            $reflectionProperty->setValue($actualObject, $objectToBind);
         }
 
         return $actualObject;

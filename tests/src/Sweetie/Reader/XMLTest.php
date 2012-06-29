@@ -58,7 +58,6 @@ XML;
         $blueprint = $reader->getBlueprint('stubTest');
 
         $this->assertEquals('Foo', $blueprint->getClass());
-        $this->assertContains('bar', $blueprint->getPropertyNames());
     }
 
     /**

@@ -37,6 +37,8 @@ class ReaderTest extends \TestCase
      */
     public function testCyclicDependencyDetected()
     {
+        $this->setExpectedException('\InvalidArgumentException');
+
         $xml = <<< XML
 <?xml version="1.0" encoding="UTF-8"?>
 <sweetie>
@@ -48,19 +50,15 @@ class ReaderTest extends \TestCase
             <property name="bar" ref="@id:blueprint3" />
         </blueprint>
         <blueprint id="blueprint3" class="Baz">
-            <property name="bar" ref="blueprint1" />
+            <property name="bar" ref="@id:blueprint1" />
         </blueprint>
     </bindings>
 
 </sweetie>
 XML;
+        $this->_writeFile('/tmp/bind.xml', $xml);
+
         $actualObject = new XML();
-        $reflection = new ReflectionObject($actualObject);
-
-        /* @var $parseMethod ReflectionMethod */
-        $parseMethod = $reflection->getMethod('_parse');
-        $parseMethod->setAccessible(true);
-
-        $parseMethod->invokeArgs($actualObject, array($xml));
+        $actualObject->load('/tmp/bind.xml');
     }
 }

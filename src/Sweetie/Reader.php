@@ -89,13 +89,13 @@ abstract class Reader
      */
     protected function _hasCyclicDependency(Blueprint $blueprint)
     {
-        /* @var $blueprint \Sweetie\Blueprint  */
-        foreach ($blueprint as $name => $value) {
-            if (!$blueprint->isIdReference($value)) {
+        /* @var $property Sweetie\Blueprint\Property */
+        foreach ($blueprint as $property) {
+            if (!$property->isIdReference()) {
                 continue;
             }
 
-            $id = $blueprint->getIdFromReference($value);
+            $id = $property->getIdFromReference();
 
             if ($this->_stack->contains($id)) {
                 return true;
