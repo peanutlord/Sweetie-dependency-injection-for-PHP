@@ -91,7 +91,7 @@ class Binder
             throw new \BadMethodCallException($message);
         }
 
-        $bindings = $this->_reader->getClassBindings($id);
+        $bindings = $this->_reader->getBlueprint($id);
 
         $injector = $this->_getInjector();
         return $injector->inject($bindings);

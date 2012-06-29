@@ -24,7 +24,7 @@ class XML extends Reader
      */
     protected $_options = array();
 
-	/**
+    /**
      * @see Sweetie.Reader::getOption()
      */
     public function getOption($key, $default)
@@ -32,43 +32,29 @@ class XML extends Reader
         return isset($this->_options[$key]) ? $this->_options[$key] : $default;
     }
 
-	/**
+    /**
      * @see Sweetie.Reader::load()
      */
-    public function load($file)
+    public function _parse($content)
     {
-        if (!is_readable($file)) {
-            $message = sprintf('File "%s" not found or not readable', $file);
-            throw new \InvalidArgumentException($message);
-        }
+        $xml = new \SimpleXMLElement($content);
 
-        $xml = new \SimpleXMLElement(file_get_contents($file));
+        foreach ($xml->xpath('//blueprint') as $set) {
+            $attributes = $set->attributes();
 
-        //
-        $blueprints = array();
+            // ID always has to be unique
+            $id = (string) $attributes['id'];
+            $class = (string) $attributes['class'];
 
-        foreach ($xml->xpath('//sweetie//bindings//blueprint') as $set) {
-            $blueprint = $set->attributes();
-
-            $id = (string) $blueprint['id'];
-            if (isset($this->_bindings[$id])) {
-                $message = sprintf('Cannot redeclare ID "%s"!', $id);
-                throw new \InvalidArgumentException($message);
+            $blueprint = $this->newBlueprint($id, $class);
+            foreach ($set->xpath(sprintf('//blueprint[@id="%s"]//property', $id)) as $row) {
+                $blueprint->addProperty((string) $row['name'], (string) $row['ref']);
             }
-
-            $binding = new ClassBindings($id, (string) $blueprint['class']);
-
-            $path = sprintf('//blueprint[@id="%s"]//property', $id);
-            foreach ($set->xpath($path) as $row) {
-                $binding->addProperty((string) $row['name'], (string) $row['ref']);
-            }
-
-            $this->_bindings[$id] = $binding;
         }
 
         foreach ($xml->xpath('//sweetie//option') as $option) {
             $attr = $option->attributes();
-            $this->_options[(string) $attr['key']] = (string) $attr['value'];
+            $this->setOption((string) $attr['key'], (string) $attr['value']);
         }
     }
 }

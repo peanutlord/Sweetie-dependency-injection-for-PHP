@@ -4,6 +4,8 @@
 // +----------------------------------------------------------+
 
 namespace Sweetie\Injector;
+use Sweetie\Blueprint;
+
 use Sweetie\Binder;
 
 use Sweetie\ClassBindings;
@@ -19,24 +21,24 @@ use Sweetie\Injector;
 class Magic extends Injector
 {
 	/**
-     * @see Sweetie.Injector::inject()
+     * @see Sweetie.Injector::_doInject()
      */
-    public function inject(ClassBindings $bindings)
+    protected function _doInject(Blueprint $blueprint)
     {
-        $className = $bindings->getClassName();
-        $actualObject = new $className();
+        $class = $blueprint->getClass();
+        $actualObject = new $class();
 
         $reflection = new \ReflectionObject($actualObject);
-        foreach ($bindings->getProperties() as $name) {
+        foreach ($blueprint as $name => $ref) {
+            /* @var $property ReflectionProperty */
             $property = $reflection->getProperty($name);
+
             if (!$property->isPublic()) {
                 $property->setAccessible(true);
             }
 
-            $reference = $bindings->getReference($name);
-            $bindObject = $this->_getDependencyFromReference($reference);
-
-            $property->setValue($actualObject, $bindObject);
+            $objectToBind = $this->_getDependencyFromReference($ref);
+            $property->setValue($actualObject, $objectToBind);
         }
 
         return $actualObject;

@@ -19,3 +19,5 @@ $f = function($name) {
 };
 
 spl_autoload_register($f);
+
+include 'TestCase.php';

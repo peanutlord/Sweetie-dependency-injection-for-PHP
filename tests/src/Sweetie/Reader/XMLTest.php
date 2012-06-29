@@ -11,7 +11,7 @@ use Sweetie\Reader\XML;
  * @author Christopher Marchfelder <marchfelder@googlemail.com>
  * @license MIT
  */
-class XMLTest extends PHPUnit_Framework_TestCase
+class XMLTest extends \TestCase
 {
 
     /**
@@ -31,39 +31,7 @@ class XMLTest extends PHPUnit_Framework_TestCase
 
 </sweetie>
 XML;
-        $this->_writeXML($xml);
-    }
-
-    /**
-     *
-     * @see PHPUnit_Framework_TestCase::tearDown()
-     */
-    public function tearDown()
-    {
-       @unlink('/tmp/bind.xml');
-    }
-
-    /**
-     * Writes the XML into a file
-     *
-     * @param string $data
-     *
-     * @return void
-     */
-    protected function _writeXML($data)
-    {
-        file_put_contents('/tmp/bind.xml', $data);
-    }
-
-    /**
-     * @return void
-     */
-    public function testInvalidFileThrowsException()
-    {
-        $this->setExpectedException('InvalidArgumentException');
-
-        $reader = new XML();
-        $reader->load('falseBind.xml');
+        $this->_writeFile('/tmp/bind.xml', $xml);
     }
 
     /**
@@ -76,7 +44,7 @@ XML;
         $reader = new XML();
         $reader->load('/tmp/bind.xml');
 
-        $reader->getClassBindings('someFalseId');
+        $reader->getBlueprint('someFalseId');
     }
 
     /**
@@ -87,11 +55,10 @@ XML;
         $reader = new XML();
         $reader->load('/tmp/bind.xml');
 
-        $binding = $reader->getClassBindings('stubTest');
+        $blueprint = $reader->getBlueprint('stubTest');
 
-        $this->assertEquals('Foo', $binding->getClassName());
-        $this->assertContains('bar', $binding->getProperties());
-        $this->assertEquals('Bar', $binding->getReference('bar'));
+        $this->assertEquals('Foo', $blueprint->getClass());
+        $this->assertContains('bar', $blueprint->getPropertyNames());
     }
 
     /**
@@ -114,7 +81,7 @@ XML;
 
 </sweetie>
 XML;
-        $this->_writeXML($xml);
+        $this->_writeFile('/tmp/bind.xml', $xml);
 
         $this->setExpectedException('InvalidArgumentException');
 

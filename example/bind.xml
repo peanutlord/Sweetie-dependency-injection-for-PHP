@@ -15,6 +15,7 @@
         <blueprint id="stubTest2" class="Foo">
             <property name="bar" ref="Bar" />
         </blueprint>
+        
     </bindings>
     
 </sweetie>

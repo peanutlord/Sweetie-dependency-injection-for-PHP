@@ -28,3 +28,10 @@ echo $foo->getBar()->sayHello();
 /* @var $foo2 Foo */
 $foo = Binder::factory('stubTest2');
 echo $foo->getBar()->sayHello();
+
+try {
+    $reader = new \Sweetie\Reader\XML();
+    $reader->load('cyclicBind.xml');
+} catch(\Exception $e) {
+    echo "You naughty boy!\n";
+}

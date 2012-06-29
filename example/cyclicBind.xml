@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sweetie>
+    <option key="injector" value="Sweetie\Injector\Magic" />
+    
+    <bindings>
+        <!-- Manual test for cyclic dependencies -->
+        <blueprint id="cycle1" class="Foo">
+            <property name="bar" ref="@id:cycle2" />
+        </blueprint>
+        
+        <blueprint id="cycle2" class="Bar">
+            <property name="baz" ref="@id:cycle2" />
+        </blueprint>
+        
+        <blueprint id="cycle3" class="baz">
+            <property name="boo" ref="@id:cycle1" />
+        </blueprint>
+        
+    </bindings>
+    
+</sweetie>

@@ -6,7 +6,7 @@
 use Sweetie\Reader\XML;
 use Sweetie\Binder;
 use Sweetie\Injector\Magic;
-use Sweetie\ClassBindings;
+use Sweetie\Blueprint;
 
 class Foo { public $bar = null; }
 class Bar { }
@@ -17,7 +17,7 @@ class Bar { }
  * @author Christopher Marchfelder <marchfelder@googlemail.com>
  * @license MIT
  */
-class MagicTest extends PHPUnit_Framework_TestCase
+class MagicTest extends \TestCase
 {
 
     /**
@@ -37,73 +37,48 @@ class MagicTest extends PHPUnit_Framework_TestCase
     public function testReflectionInjection()
     {
         // Fake a class binding
-        $bindings = new ClassBindings('someId', 'Foo');
-        $bindings->addProperty('bar', 'Bar');
+        $blueprint = new Blueprint('someId', 'Foo');
+        $blueprint->addProperty('bar', 'Bar');
 
         $binder = $this->getMock('Sweetie\Binder', array(), array(), '', false);
 
         $magic = new Magic($binder);
-        $actualObject = $magic->inject($bindings);
+        $actualObject = $magic->inject($blueprint);
 
         $expected = new Bar();
         $this->assertEquals($expected, $actualObject->bar);
     }
 
     /**
-     * Tests if a self referencing id throws an exception
-     *
-     * @return void
-     */
-    public function testSelfReferencingIDsThrowsException()
-    {
-        $bindings = new ClassBindings('someId', 'Foo');
-        $bindings->addProperty('bar', '@id:someId');
-
-		/* @var $reader Reader */
-        $reader = $this->getMock('Sweetie\Reader\XML', array('getClassBindings'));
-        $reader->expects($this->any())
-               ->method('getClassBindings')
-               ->will($this->returnValue($bindings));
-
-        $instance = Binder::boostrap($reader);
-
-        $message = 'Reference-ID someId references itself';
-        $this->setExpectedException('InvalidArgumentException', $message);
-
-        $magic = new Magic($instance);
-        $magic->inject($bindings);
-    }
-
-	/**
      *
      *
      * @return void
      */
     public function testReferencingIDs()
     {
-        $bindingsOne = new ClassBindings('someId', 'Foo');
-        $bindingsOne->addProperty('bar', '@id:someOtherId');
+        $blueprintOne = new Blueprint('someId', 'Foo');
+        $blueprintOne->addProperty('bar', '@id:someOtherId');
 
-        $bindingsTwo = new ClassBindings('someOtherId', 'Bar');
+        $blueprintTwo = new Blueprint('someOtherId', 'Bar');
 
-        $f = function($i) use($bindingsOne, $bindingsTwo) {
+        $f = function($i) use($blueprintOne, $blueprintTwo) {
             if ($i == 'someOtherId') {
-                return $bindingsTwo;
+                return $blueprintTwo;
             } else {
-                return $bindingsOne;
+                return $blueprintOne;
             }
         };
 
-		/* @var $reader Reader */
-        $reader = $this->getMock('Sweetie\Reader\XML', array('getClassBindings'));
-        $reader->expects($this->any())
-               ->method('getClassBindings')
+        /* @var $reader Reader */
+        $reader = $this->getMock('Sweetie\Reader\XML', array('getBlueprint'));
+        $reader->expects($this->once())
+               ->method('getBlueprint')
                ->will($this->returnCallback($f));
 
         $instance = Binder::boostrap($reader);
 
         $magic = new Magic($instance);
-        $magic->inject($bindingsOne);
+        $magic->inject($blueprintOne);
     }
 
     /**
@@ -126,7 +101,7 @@ class MagicTest extends PHPUnit_Framework_TestCase
 
 </sweetie>
 XML;
-        file_put_contents('/tmp/bind.xml', $xml);
+        $this->_writeFile('/tmp/bind.xml', $xml);
 
         $reader = new XML();
         $reader->load('/tmp/bind.xml');
