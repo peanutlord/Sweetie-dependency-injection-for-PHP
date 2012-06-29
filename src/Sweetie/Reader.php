@@ -120,7 +120,7 @@ abstract class Reader
      *
      * @return mixed
      */
-    public function getOption($key, $default)
+    public function getOption($key, $default = false)
     {
         return isset($this->_options[$key]) ? $this->_options[$key] : $default;
     }
