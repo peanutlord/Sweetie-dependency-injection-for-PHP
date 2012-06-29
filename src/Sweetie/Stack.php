@@ -21,8 +21,15 @@ class Stack extends \SplStack
      */
     public function clear()
     {
-        for($i = 0; $i < count($this); $i++) {
-            // Remove from stack
+        // Ignore empty stack
+        if ($this->isEmpty()) {
+            return;
+        }
+
+        // count() is eval'ed in every for-loop iteration, causing the stack
+        // not to be cleaned completely
+        $itemCount = $this->count();
+        for ($i = 0; $i < $itemCount; $i++) {
             $this->pop();
         }
     }
@@ -34,8 +41,12 @@ class Stack extends \SplStack
      *
      * @return bool
      */
-    public function inStack($element)
+    public function contains($element)
     {
+        if ($this->isEmpty()) {
+            return false;
+        }
+
         foreach ($this as $row) {
             if ($row === $element) {
                 return true;

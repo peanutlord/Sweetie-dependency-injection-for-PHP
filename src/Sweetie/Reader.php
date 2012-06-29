@@ -97,7 +97,7 @@ abstract class Reader
 
             $id = $blueprint->getIdFromReference($value);
 
-            if ($this->_stack->inStack($id)) {
+            if ($this->_stack->contains($id)) {
                 return true;
             }
 
