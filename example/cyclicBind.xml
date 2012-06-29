@@ -9,7 +9,7 @@
         </blueprint>
         
         <blueprint id="cycle2" class="Bar">
-            <property name="baz" ref="@id:cycle2" />
+            <property name="baz" ref="@id:cycle3" />
         </blueprint>
         
         <blueprint id="cycle3" class="baz">
