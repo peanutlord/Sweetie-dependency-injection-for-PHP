@@ -34,6 +34,7 @@ class StackTest extends \TestCase
         $stack->push('baz');
 
         $this->assertTrue($stack->contains('bar'));
+        $this->assertFalse($stack->contains('blubber'));
     }
 
 }
