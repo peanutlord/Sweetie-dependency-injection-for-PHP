@@ -2,6 +2,12 @@
 <sweetie>
     <option key="injector" value="Sweetie\Injector\Magic" />
     
+    <templates>
+        <template id="foo">
+            <property name="bar" ref="@id:Bar" />
+        </template>
+    </templates>
+    
     <bindings>
         <!-- This blueprint cant even afford properties... -->
         <blueprint id="Bar" class="Bar" />

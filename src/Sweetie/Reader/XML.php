@@ -18,6 +18,13 @@ class XML extends Reader
 {
 
     /**
+     * Holds the template definitions
+     *
+     * @var unknown_type
+     */
+    protected $_templates = array();
+
+    /**
      * Holds the options from the xml
      *
      * @var string[]
@@ -35,10 +42,45 @@ class XML extends Reader
     /**
      * @see Sweetie.Reader::load()
      */
-    public function _parse($content)
+    protected function _parse($content)
     {
         $xml = new \SimpleXMLElement($content);
 
+        $this->_parseTemplates($xml);
+        $this->_parseBlueprints($xml);
+        $this->_parseOptions($xml);
+    }
+
+    /**
+     * Parses the templates from the xml
+     *
+     * @param SimpleXMLElement $xml
+     *
+     * @return void
+     */
+    protected function _parseTemplates(\SimpleXMLElement $xml)
+    {
+        foreach ($xml->xpath('//template') as $template) {
+            $attributes = $template->attributes();
+            $id = (string) $attributes['id'];
+
+            $this->_templates[$id] = array();
+            foreach ($xml->xpath(sprintf('//template[@name="%s"]//property', $id)) as $row) {
+                $this->_templates[$id] = array('name' => (string) $row['name'],
+                                               'ref' => (string) $row['ref']);
+            }
+        }
+    }
+
+    /**
+     * Parses the blueprints
+     *
+     * @param SimpleXMLElement $xml
+     *
+     * @return void
+     */
+    protected function _parseBlueprints(\SimpleXMLElement $xml)
+    {
         foreach ($xml->xpath('//blueprint') as $set) {
             $attributes = $set->attributes();
 
@@ -50,8 +92,25 @@ class XML extends Reader
             foreach ($set->xpath(sprintf('//blueprint[@id="%s"]//property', $id)) as $row) {
                 $blueprint->addProperty((string) $row['name'], (string) $row['ref']);
             }
-        }
 
+            $templateId = (string) $attributes['template-id'];
+            if ($templateId) {
+                foreach ($this->_templates[$templateId] as $tpl) {
+                    $blueprint->addProperty($tpl['name'], $tpl['ref']);
+                }
+            }
+        }
+    }
+
+    /**
+     * Parses the options from the xml
+     *
+     * @param SimpleXMLElement $xml
+     *
+     * @return void
+     */
+    protected function _parseOptions(\SimpleXMLElement $xml)
+    {
         foreach ($xml->xpath('//sweetie//option') as $option) {
             $attr = $option->attributes();
             $this->setOption((string) $attr['key'], (string) $attr['value']);
