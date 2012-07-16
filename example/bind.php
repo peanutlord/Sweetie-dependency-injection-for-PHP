@@ -22,12 +22,16 @@ $reader->load('bind.xml');
 Binder::boostrap($reader);
 
 /* @var $foo Foo */
-$foo = Binder::factory('stubTest');
+$foo = Binder::factory('withIdReference');
 echo $foo->getBar()->sayHello();
 
 /* @var $foo2 Foo */
-$foo = Binder::factory('stubTest2');
-echo $foo->getBar()->sayHello();
+$foo2 = Binder::factory('withoutIdReference');
+echo $foo2->getBar()->sayHello();
+
+/* @var $foo3 Foo */
+$foo3 = Binder::factory('withTemplating');
+echo $foo3->getBar()->sayHello();
 
 try {
     $reader = new \Sweetie\Reader\XML();

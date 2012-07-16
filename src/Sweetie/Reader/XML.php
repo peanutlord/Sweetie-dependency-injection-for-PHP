@@ -59,7 +59,6 @@ class XML extends Reader
             foreach ($xml->xpath(sprintf('//template[@id="%s"]//property', $id)) as $row) {
                 $this->_addTemplate($id, (string) $row['name'], (string) $row['ref']);
             }
-
         }
     }
 

@@ -22,7 +22,7 @@ class Foo
 
 }
 
-class Bar
+interface hello
 {
 
     /**
@@ -30,9 +30,30 @@ class Bar
      *
      * @return string
      */
+    public function sayHello();
+
+}
+
+class Bar implements hello
+{
+
+    /**
+     * @see hello::sayHello();
+     */
     public function sayHello()
     {
         return "Hello, I am Sweetie\n";
     }
 
+}
+
+class Baz implements hello
+{
+    /**
+     * @see hello::sayHello();
+     */
+    public function sayHello()
+    {
+        return "Hello, I am Sweetie - but I was delivered by another class :) \n";
+    }
 }

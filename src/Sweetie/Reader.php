@@ -201,7 +201,7 @@ abstract class Reader
             throw new \InvalidArgumentException(sprintf('Unknown template "%s"', $templateId));
         }
 
-        foreach ($this->_templates[$templateId] as $templateId => $tpl) {
+        foreach ($this->_templates[$templateId] as $tpl) {
             $blueprint->addProperty($tpl['name'], $tpl['ref']);
         }
     }

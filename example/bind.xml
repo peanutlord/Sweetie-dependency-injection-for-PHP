@@ -3,8 +3,8 @@
     <option key="injector" value="Sweetie\Injector\Magic" />
     
     <templates>
-        <template id="foo">
-            <property name="bar" ref="@id:Bar" />
+        <template id="example">
+            <property name="bar" ref="Baz" />
         </template>
     </templates>
     
@@ -13,14 +13,17 @@
         <blueprint id="Bar" class="Bar" />
         
         <!-- With ID referencing -->
-        <blueprint id="stubTest" class="Foo">
+        <blueprint id="withIdReference" class="Foo">
             <property name="bar" ref="@id:Bar" />
         </blueprint>
         
         <!-- No ID Referencing -->
-        <blueprint id="stubTest2" class="Foo">
+        <blueprint id="withoutIdReference" class="Foo">
             <property name="bar" ref="Bar" />
         </blueprint>
+        
+        <!-- With templating -->
+        <blueprint id="withTemplating" class="Foo" template-id="example" />
         
     </bindings>
     

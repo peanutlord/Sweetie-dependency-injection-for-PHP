@@ -115,4 +115,20 @@ XML;
         $reader->load('/tmp/bind.xml');
     }
 
+    public function testInvalidTemplateIdThrowsException()
+    {
+        $this->setExpectedException('InvalidArgumentException', 'Unknown template "someNoneExistingId"');
+
+        $xml = <<< XML
+<?xml version="1.0" encoding="UTF-8"?>
+<sweetie>
+     <blueprint template-id="someNoneExistingId"></blueprint>
+</sweetie>
+XML;
+        $this->_writeFile('/tmp/bind.xml', $xml);
+
+        $reader = new XML();
+        $reader->load('/tmp/bind.xml');
+    }
+
 }
