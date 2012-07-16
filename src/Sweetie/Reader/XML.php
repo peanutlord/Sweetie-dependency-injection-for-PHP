@@ -32,14 +32,6 @@ class XML extends Reader
     protected $_options = array();
 
     /**
-     * @see Sweetie.Reader::getOption()
-     */
-    public function getOption($key, $default = false)
-    {
-        return isset($this->_options[$key]) ? $this->_options[$key] : $default;
-    }
-
-    /**
      * @see Sweetie.Reader::load()
      */
     protected function _parse($content)
