@@ -64,11 +64,10 @@ class XML extends Reader
             $attributes = $template->attributes();
             $id = (string) $attributes['id'];
 
-            $this->_templates[$id] = array();
-            foreach ($xml->xpath(sprintf('//template[@name="%s"]//property', $id)) as $row) {
-                $this->_templates[$id] = array('name' => (string) $row['name'],
-                                               'ref' => (string) $row['ref']);
+            foreach ($xml->xpath(sprintf('//template[@id="%s"]//property', $id)) as $row) {
+                $this->_addTemplate($id, (string) $row['name'], (string) $row['ref']);
             }
+
         }
     }
 
@@ -88,16 +87,16 @@ class XML extends Reader
             $id = (string) $attributes['id'];
             $class = (string) $attributes['class'];
 
-            $blueprint = $this->newBlueprint($id, $class);
-            foreach ($set->xpath(sprintf('//blueprint[@id="%s"]//property', $id)) as $row) {
-                $blueprint->addProperty((string) $row['name'], (string) $row['ref']);
+            $blueprint = $this->_newBlueprint($id, $class);
+
+            // Templates first, the blueprint might override some stuff
+            if (isset($attributes['template-id'])) {
+                $templateId = (string) $attributes['template-id'];
+                $this->_applyTemplate($blueprint, $templateId);
             }
 
-            $templateId = (string) $attributes['template-id'];
-            if ($templateId) {
-                foreach ($this->_templates[$templateId] as $tpl) {
-                    $blueprint->addProperty($tpl['name'], $tpl['ref']);
-                }
+            foreach ($set->xpath(sprintf('//blueprint[@id="%s"]//property', $id)) as $row) {
+                $blueprint->addProperty((string) $row['name'], (string) $row['ref']);
             }
         }
     }

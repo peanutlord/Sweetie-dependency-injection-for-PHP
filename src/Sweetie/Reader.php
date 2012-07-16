@@ -37,6 +37,13 @@ abstract class Reader
     private $_stack = null;
 
     /**
+     * Holds the template config
+     *
+     * @var string[]
+     */
+    protected $_templates = array();
+
+    /**
      * Inits the stack for parsing
      *
      */
@@ -146,7 +153,7 @@ abstract class Reader
      *
      * @return Sweetie\Blueprint
      */
-    public function newBlueprint($id, $class)
+    protected function _newBlueprint($id, $class)
     {
         if (isset($this->_blueprints[$id])) {
             throw new \InvalidArgumentException(sprintf('Cannot redeclare ID "%s"', $id));
@@ -168,6 +175,35 @@ abstract class Reader
         }
 
         return $this->_blueprints[$id];
+    }
+
+    /**
+     * Adds template properties
+     *
+     * @return void
+     */
+    protected function _addTemplate($templateId, $name, $ref)
+    {
+        $this->_templates[$templateId][] = array('name' => $name, 'ref' => $ref);
+    }
+
+    /**
+     * Apply's the properties, set in the template, on a blueprint
+     *
+     * @param Blueprint $blueprint
+     * @param int $templateId
+     *
+     * @return void
+     */
+    protected function _applyTemplate(Blueprint $blueprint, $templateId)
+    {
+        if (!isset($this->_templates[$templateId])) {
+            throw new \InvalidArgumentException(sprintf('Unknown template "%s"', $templateId));
+        }
+
+        foreach ($this->_templates[$templateId] as $templateId => $tpl) {
+            $blueprint->addProperty($tpl['name'], $tpl['ref']);
+        }
     }
 
 }

@@ -32,7 +32,9 @@ class TestCase extends PHPUnit_Framework_TestCase
     protected function _writeFile($path, $data)
     {
         if (file_put_contents($path, $data) !== false) {
-            $this->_writtenFiles[] = $path;
+            if (array_search($path, $this->_writtenFiles) === false) {
+                $this->_writtenFiles[] = $path;
+            }
         }
     }
 

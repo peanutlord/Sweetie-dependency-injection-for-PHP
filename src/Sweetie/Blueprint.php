@@ -13,7 +13,7 @@ namespace Sweetie;
  */
 use Sweetie\Blueprint\Property;
 
-class Blueprint implements \Iterator
+class Blueprint implements \Iterator, \Countable
 {
 
     /**
@@ -72,9 +72,35 @@ class Blueprint implements \Iterator
     public function addProperty($name, $value)
     {
         $property = new Property($name, $value);
-        $this->_properties[] = $property;
+
+        $position = $this->_findProperty($name);
+        if ($position === false) {
+            $this->_properties[] = $property;
+        } else {
+            // Might happend when using a template for the blueprint
+            $this->_properties[$position] = $property;
+        }
 
         return $property;
+    }
+
+    /**
+     * Finds a property by name
+     *
+     * @param string $name
+     *
+     * @return int the position of the property inside the $_properties array
+     */
+    protected function _findProperty($name)
+    {
+        // @todo check if we can use array search or something similiar
+        foreach ($this->_properties as $key => $property) {
+            if ($property->getName() === $name) {
+                return $key;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -116,5 +142,14 @@ class Blueprint implements \Iterator
     {
         $this->_head = 0;
     }
+
+    /**
+     * @see Countable::count()
+     */
+    public function count()
+    {
+        return count($this->_properties);
+    }
+
 
 }

@@ -3,7 +3,13 @@
 // | Sweetie Dependency Injection 2012                        |
 // +----------------------------------------------------------+
 
+use Sweetie\Blueprint;
+use Sweetie\Blueprint\Property;
 use Sweetie\Reader\XML;
+
+class A { }
+class B { protected $a; }
+
 
 /**
  * Test cases for the class binder
@@ -60,5 +66,59 @@ XML;
 
         $actualObject = new XML();
         $actualObject->load('/tmp/bind.xml');
+    }
+
+    public function testApplyTemplateProperties()
+    {
+        $xmlReader = new XML();
+        $reflection = new ReflectionObject($xmlReader);
+
+        /* @var $addTemplate ReflectionMethod */
+        $addTemplate = $reflection->getMethod('_addTemplate');
+        $addTemplate->setAccessible(true);
+
+        $addTemplate->invokeArgs($xmlReader, array('foo', 'bar', 'baz'));
+
+        $blueprint = new Blueprint('someId', 'someClass');
+
+        /* @var $applyTemplate ReflectionMethod */
+        $applyTemplate = $reflection->getMethod('_applyTemplate');
+        $applyTemplate->setAccessible(true);
+
+        $applyTemplate->invokeArgs($xmlReader, array($blueprint, 'foo'));
+
+        $this->assertEquals(1, $blueprint->count());
+
+        $property = $blueprint->current();
+        $this->assertEquals('bar', $property->getName());
+        $this->assertEquals('baz', $property->getReference());
+    }
+
+    public function testApplyTemplatePropertiesGetOverriden()
+    {
+        $xmlReader = new XML();
+        $reflection = new ReflectionObject($xmlReader);
+
+        /* @var $addTemplate ReflectionMethod */
+        $addTemplate = $reflection->getMethod('_addTemplate');
+        $addTemplate->setAccessible(true);
+
+        $addTemplate->invokeArgs($xmlReader, array('foo', 'bar', 'baz'));
+
+        $blueprint = new Blueprint('someId', 'someClass');
+
+        /* @var $applyTemplate ReflectionMethod */
+        $applyTemplate = $reflection->getMethod('_applyTemplate');
+        $applyTemplate->setAccessible(true);
+
+        $applyTemplate->invokeArgs($xmlReader, array($blueprint, 'foo'));
+
+        $blueprint->addProperty('bar', 'que');
+
+        $this->assertEquals(1, $blueprint->count());
+
+        $property = $blueprint->current();
+        $this->assertEquals('bar', $property->getName());
+        $this->assertEquals('que', $property->getReference());
     }
 }

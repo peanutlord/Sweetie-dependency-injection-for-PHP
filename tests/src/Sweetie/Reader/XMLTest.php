@@ -88,4 +88,31 @@ XML;
         $reader->load('/tmp/bind.xml');
     }
 
+    public function testAddingTemplates()
+    {
+        $xml = <<< XML
+<?xml version="1.0" encoding="UTF-8"?>
+<sweetie>
+    <templates>
+        <template id="foo">
+            <property name="bar" ref="@id:Bar" />
+            <property name="foo" ref="@id:Foo" />
+        </template>
+    </templates>
+</sweetie>
+XML;
+        $this->_writeFile('/tmp/bind.xml', $xml);
+
+        $reader = $this->getMock('\Sweetie\Reader\XML', array('_addTemplate'));
+        $reader->expects($this->exactly(2))
+               ->method('_addTemplate')
+               ->with($this->equalTo('foo'),
+                      $this->logicalOr($this->equalTo('bar'), $this->equalTo('foo')),
+                      $this->logicalOr($this->equalTo('@id:Bar'), $this->equalTo('@id:Foo'))
+                )
+               ->will($this->returnValue(null));
+
+        $reader->load('/tmp/bind.xml');
+    }
+
 }
