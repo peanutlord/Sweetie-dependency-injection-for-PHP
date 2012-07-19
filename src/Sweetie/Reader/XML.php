@@ -78,7 +78,7 @@ class XML extends Reader
             $id = (string) $attributes['id'];
             $class = (string) $attributes['class'];
 
-            $blueprint = $this->_newBlueprint($id, $class);
+            $blueprint = $this->_createBlueprint($id, $class);
 
             // Templates first, the blueprint might override some stuff
             if (isset($attributes['template-id'])) {

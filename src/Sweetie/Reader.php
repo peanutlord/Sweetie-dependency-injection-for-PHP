@@ -153,7 +153,7 @@ abstract class Reader
      *
      * @return Sweetie\Blueprint
      */
-    protected function _newBlueprint($id, $class)
+    protected function _createBlueprint($id, $class)
     {
         if (isset($this->_blueprints[$id])) {
             throw new \InvalidArgumentException(sprintf('Cannot redeclare ID "%s"', $id));
