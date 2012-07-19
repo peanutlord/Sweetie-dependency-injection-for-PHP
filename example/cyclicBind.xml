@@ -5,15 +5,15 @@
     <bindings>
         <!-- Manual test for cyclic dependencies -->
         <blueprint id="cycle1" class="Foo">
-            <property name="bar" ref="@id:cycle2" />
+            <property name="bar" ref="@id(cycle2)" />
         </blueprint>
         
         <blueprint id="cycle2" class="Bar">
-            <property name="baz" ref="@id:cycle3" />
+            <property name="baz" ref="@id(cycle3)" />
         </blueprint>
         
         <blueprint id="cycle3" class="baz">
-            <property name="boo" ref="@id:cycle1" />
+            <property name="boo" ref="@id(cycle1)" />
         </blueprint>
         
     </bindings>

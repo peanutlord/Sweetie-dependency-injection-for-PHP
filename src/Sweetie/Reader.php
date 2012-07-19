@@ -98,7 +98,7 @@ abstract class Reader
     {
         /* @var $property Sweetie\Blueprint\Property */
         foreach ($blueprint as $property) {
-            if (!$property->isIdReference()) {
+            if ($property->isClassReference() || $property->isInvokeReference()) {
                 continue;
             }
 

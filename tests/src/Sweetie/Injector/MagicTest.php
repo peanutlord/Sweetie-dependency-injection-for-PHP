@@ -57,7 +57,7 @@ class MagicTest extends \TestCase
     public function testReferencingIDs()
     {
         $blueprintOne = new Blueprint('someId', 'Foo');
-        $blueprintOne->addProperty('bar', '@id:someOtherId');
+        $blueprintOne->addProperty('bar', '@id(someOtherId)');
 
         $blueprintTwo = new Blueprint('someOtherId', 'Bar');
 
@@ -95,7 +95,7 @@ class MagicTest extends \TestCase
     <bindings>
         <blueprint id="Bar" class="Bar" />
         <blueprint id="stubTest" class="Foo">
-            <property name="bar" ref="@id:Bar" />
+            <property name="bar" ref="@id(Bar)" />
         </blueprint>
     </bindings>
 

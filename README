@@ -36,7 +36,7 @@ Here is a little sample:
         
         <!-- With ID referencing -->
         <blueprint id="stubTest" class="Foo">
-            <property name="bar" ref="@id:Bar" />
+            <property name="bar" ref="@id(Bar)" />
         </blueprint>
         
         <!-- No ID Referencing -->

@@ -14,7 +14,7 @@
         
         <!-- With ID referencing -->
         <blueprint id="withIdReference" class="Foo">
-            <property name="bar" ref="@id:Bar" />
+            <property name="bar" ref="@id(Bar)" />
         </blueprint>
         
         <!-- No ID Referencing -->

@@ -29,6 +29,13 @@ class Property
     protected $_ref = '';
 
     /**
+     * The regular expression to parse a @id and @invoke tag
+     *
+     * @var string
+     */
+    protected $_regexp = '/@(\w*)\(([^)]*)\)/';
+
+    /**
      * Constructor
      *
      * @param string $name
@@ -43,23 +50,96 @@ class Property
     }
 
     /**
-     * Returns of the property reference is a id
+     * Returns if the reference is a class name
+     *
+     * @return bool
+     */
+    public function isClassReference()
+    {
+        return strpos($this->_ref, '@') === false;
+    }
+
+    /**
+     * Parses the reference
+     *
+     * @return string[]
+     */
+    protected function _parseReference()
+    {
+        $matches = array();
+        preg_match($this->_regexp, $this->_ref, $matches);
+
+        if (count($matches) === 0) {
+            // @todo happens with syntax error's, change error message
+            throw new \InvalidArgumentException(sprintf('Can\'t parse reference "%s", sure its a tag?', $this->_ref));
+        }
+
+        $args = trim($matches[2]);
+
+        if ($args === '') {
+            throw new \InvalidArgumentException(sprintf('No arguments supplied within "%s" tag', $matches[1]));
+        }
+
+        return array('tag' => $matches[1], 'args' => $args);
+    }
+
+    /**
+     * Returns if the reference is a blueprint id
      *
      * @return bool
      */
     public function isIdReference()
     {
-        return strpos($this->_ref, '@id:') === 0;
+        return $this->getReferenceType() === 'id';
     }
 
     /**
-     * Returns the id from the reference
+     * Returns the id from a @id($anyId) reference
      *
      * @return string
      */
     public function getIdFromReference()
     {
-        return substr($this->_ref, 4);
+        $parts = $this->_parseReference();
+        return $parts['args'];
+    }
+
+    /**
+     * Returns if the reference is a method invocation
+     *
+     * @return bool
+     */
+    public function isInvokeReference()
+    {
+        return $this->getReferenceType() === 'invoke';
+    }
+
+    /**
+     * Returns all parameters required to make a successfull invocation
+     *
+     */
+    public function getInvokeParams()
+    {
+        $parts = $this->_parseReference();
+
+        $args = explode(',', $parts['args']);
+        $f = function($item) {
+            $item = trim($item);
+            return $item;
+        };
+
+        return array_map($f, $args);
+    }
+
+    /**
+     * Returns the type of reference (id or invoke)
+     *
+     * @return string
+     */
+    public function getReferenceType()
+    {
+        $parts = $this->_parseReference();
+        return $parts['tag'];
     }
 
     /**
