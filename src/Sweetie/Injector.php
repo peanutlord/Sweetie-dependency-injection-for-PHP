@@ -107,7 +107,7 @@ abstract class Injector
         $class = array_shift($invokeParams);
         $method = array_shift($invokeParams);
 
-        // We want to invoke the methode, no matter if its static or not
+        // We want to invoke the method, no matter if its static or not
         $reflection = new \ReflectionClass($class);
         if (!$reflection->hasMethod($method)) {
             throw new \BadMethodCallException(sprintf('Unknown Method "%s"', $method));

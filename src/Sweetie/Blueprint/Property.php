@@ -33,7 +33,14 @@ class Property
      *
      * @var string
      */
-    protected $_regexp = '/@(\w*)\(([^)]*)\)/';
+    private $_regexp = '/@(\w*)\(([^)]*)\)/';
+
+    /**
+     * Inline cache for the parsed reference
+     *
+     * @var string[]
+     */
+    private $_parsedReference = array();
 
     /**
      * Constructor
@@ -66,6 +73,10 @@ class Property
      */
     protected function _parseReference()
     {
+        if (count($this->_parsedReference) !== 0) {
+            return $this->_parsedReference;
+        }
+
         $matches = array();
         preg_match($this->_regexp, $this->_ref, $matches);
 
@@ -80,7 +91,8 @@ class Property
             throw new \InvalidArgumentException(sprintf('No arguments supplied within "%s" tag', $matches[1]));
         }
 
-        return array('tag' => $matches[1], 'args' => $args);
+        $this->_parsedReference = array('tag' => $matches[1], 'args' => $args);
+        return $this->_parsedReference;
     }
 
     /**
