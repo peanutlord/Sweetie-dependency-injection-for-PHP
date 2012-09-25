@@ -70,9 +70,12 @@ class Binder
      *
      * The method signature is as following:
      *
-     * function cache($key, $value) {
+     * function cache($key, $value = null) {
      *      // Do something funky with it
      * };
+     *
+     * When given a only a key, the closure should return the value from the
+     * cache. Given both, it should store it.
      *
      * @param \Closure $cache
      *
@@ -85,7 +88,8 @@ class Binder
 
     /**
      * Sets a closure as a session handler. This is required if you work with
-     * a session scope. The method signature is the same as with {@see Binder::setCache()}
+     * a session scope. The method signature and behavior is the same as
+     * with {@see Binder::setCache()}
      *
      * @param \Closure $sessionHandler
      *
@@ -115,11 +119,11 @@ class Binder
     {
         $this->_reader = $reader;
 
-        self::$_cache = function($key, $value) {
+        self::$_cache = function($key, $value = null) {
              // Do nothing
         };
 
-        self::$_sessionHandler = function($key, $value) {
+        self::$_sessionHandler = function($key, $value = null) {
              // Do nothing
         };
     }
