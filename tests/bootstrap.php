@@ -11,6 +11,9 @@
  */
 define('SWEETIE_PATH', realpath(__DIR__.'/../src'));
 
+class Foo { public $bar = null; }
+class Bar { }
+
 $f = function($name) {
     $parts = explode('\\', $name);
 

@@ -8,9 +8,6 @@ use Sweetie\Binder;
 use Sweetie\Injector\Magic;
 use Sweetie\Blueprint;
 
-class Foo { public $bar = null; }
-class Bar { }
-
 /**
  * Test cases for the class binder
  *

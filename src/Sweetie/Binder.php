@@ -78,7 +78,11 @@ class Binder
      * The method signature is as following:
      *
      * function cache($key, $value = null) {
-     *      // Do something funky with it
+     *      if ($value === null) {
+     *          // @todo check if value can be found
+     *      } else {
+     *          // @todo store value
+     *      }
      * };
      *
      * When given a only a key, the closure should return the value from the
@@ -189,13 +193,17 @@ class Binder
      */
     protected function _handleSessionScope(Blueprint $blueprint)
     {
-        $object = self::$_sessionHandler($blueprint->getId());
+        // We can't use the member property directly, it will cause a PHP
+        // fatal error
+        $closure = self::$_sessionHandler;
+
+        $object = $closure($blueprint->getId());
         if ($object !== false) {
             return $object;
         }
 
         $object = $this->_getInjector()->inject($blueprint);
-        self::$_sessionHandler($blueprint->getId(), $object);
+        $closure($blueprint->getId(), $object);
 
         return $object;
     }
