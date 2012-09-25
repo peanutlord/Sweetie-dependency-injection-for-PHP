@@ -4,6 +4,7 @@
 // +----------------------------------------------------------+
 
 namespace Sweetie;
+
 use Sweetie\Injector;
 
 /**
@@ -23,20 +24,6 @@ class Binder
     protected static $_instance = null;
 
     /**
-     * Holds the closure for the cache
-     *
-     * @var \Closure
-     */
-    protected static $_cache = null;
-
-    /**
-     * Holds the closure for the session handler
-     *
-     * @var \Closure
-     */
-    protected static $_sessionHandler = null;
-
-    /**
      * Holds the instance of the reader
      *
      * @var Sweetie\Reader
@@ -51,11 +38,11 @@ class Binder
     protected $_defaultInjector = null;
 
     /**
-     * Holds all objects with a request scope
+     * Holds all registered scopes
      *
-     * @var object[]
+     * @var Sweetie\Scope
      */
-    protected $_objects = array();
+    protected static $_scopes = array();
 
     /**
      * Configures the class to work properly
@@ -64,6 +51,8 @@ class Binder
      */
     public static function boostrap(Reader $reader)
     {
+        self::registerDefaultScopes();
+
         // @todo allow multiple boostrap calls to change configuration?
         if (static::$_instance === null) {
             static::$_instance = new self($reader);
@@ -73,43 +62,29 @@ class Binder
     }
 
     /**
-     * Sets a closure for the cache.
-     *
-     * The method signature is as following:
-     *
-     * function cache($key, $value = null) {
-     *      if ($value === null) {
-     *          // @todo check if value can be found
-     *      } else {
-     *          // @todo store value
-     *      }
-     * };
-     *
-     * When given a only a key, the closure should return the value from the
-     * cache. If nothing has been found, a false should be returned. If you
-     * pass $key and $value, it should store it.
-     *
-     * @param \Closure $cache
+     * Registers all default scopes
      *
      * @return void
      */
-    public static function setCache(\Closure $cache)
+    public static function registerDefaultScopes()
     {
-        self::$_cache = $cache;
+        self::registerScope('none', new Scope\None());
+        self::registerScope('request', new Scope\Request());
+        self::registerScope('session', new Scope\Session());
     }
 
     /**
-     * Sets a closure as a session handler. This is required if you work with
-     * a session scope. The method signature and behavior is the same as
-     * with {@see Binder::setCache()}
+     * Registers a single scope under a given name
+
      *
-     * @param \Closure $sessionHandler
+     * @param string $name
+     * @param Scope $scope
      *
      * @return void
      */
-    public static function setSessionHandler(\Closure $sessionHandler)
+    public static function registerScope($name, Scope $scope)
     {
-        self::$_sessionHandler = $sessionHandler;
+        self::$_scopes[$name] = $scope;
     }
 
     /**
@@ -130,15 +105,6 @@ class Binder
     protected function __construct(Reader $reader)
     {
         $this->_reader = $reader;
-
-        // Default behavior
-        self::$_cache = function($key, $value = null) {
-             return false;
-        };
-
-        self::$_sessionHandler = function($key, $value = null) {
-             return false;
-        };
     }
 
     /**
@@ -162,81 +128,21 @@ class Binder
         }
 
         $blueprint = $this->_reader->getBlueprint($id);
+        $scope = $blueprint->getScope();
 
-        switch ($blueprint->getScope()) {
-            case Blueprint::SCOPE_SESSION:
-                $object = $this->_handleSessionScope($blueprint);
-                break;
-
-            case Blueprint::SCOPE_REQUEST:
-                $object = $this->_handleRequestScope($blueprint);
-                break;
-
-            case Blueprint::SCOPE_NONE:
-            default:
-                $object = $this->_handleNoScope($blueprint);
-                break;
+        if (!isset(self::$_scopes[$scope])) {
+            throw new \InvalidArgumentException(sprintf('Unknown scope "%s"', $scope));
         }
 
-        return $object;
-    }
-
-    /**
-     * Handles a session scope
-     *
-     * @todo unittest the call
-     * @todo unittest with a closure
-     *
-     * @param Blueprint $blueprint
-     *
-     * @return object
-     */
-    protected function _handleSessionScope(Blueprint $blueprint)
-    {
-        // We can't use the member property directly, it will cause a PHP
-        // fatal error
-        $closure = self::$_sessionHandler;
-
-        $object = $closure($blueprint->getId());
-        if ($object !== false) {
-            return $object;
+        $scope = self::$_scopes[$scope];
+        if ($scope->contains($blueprint->getId())) {
+            return $scope->retrieve($blueprint->getId());
         }
 
         $object = $this->_getInjector()->inject($blueprint);
-        $closure($blueprint->getId(), $object);
+        $scope->store($blueprint->getId(), $object);
 
         return $object;
-    }
-
-    /**
-     * Handles a request scope
-     *
-     * @param Blueprint $blueprint
-     *
-     * @return object
-     */
-    protected function _handleRequestScope(Blueprint $blueprint)
-    {
-        if (isset($this->_objects[$blueprint->getId()])) {
-            return $this->_objects[$blueprint->getId()];
-        }
-
-        $object = $this->_getInjector()->inject($blueprint);
-        $this->_objects[$blueprint->getId()] = $object;
-
-        return $object;
-    }
-
-    /**
-     * Handles a blueprint with no scope
-     *
-     * @param Blueprint $blueprint
-     *
-     * @return object
-     */
-    protected function _handleNoScope(Blueprint $blueprint)
-    {
-        return $this->_getInjector()->inject($blueprint);
     }
 
     /**
