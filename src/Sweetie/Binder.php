@@ -23,6 +23,20 @@ class Binder
     protected static $_instance = null;
 
     /**
+     * Holds the closure for the cache
+     *
+     * @var \Closure
+     */
+    protected static $_cache = null;
+
+    /**
+     * Holds the closure for the session handler
+     *
+     * @var \Closure
+     */
+    protected static $_sessionHandler = null;
+
+    /**
      * Holds the instance of the reader
      *
      * @var Sweetie\Reader
@@ -52,6 +66,37 @@ class Binder
     }
 
     /**
+     * Sets a closure for the cache.
+     *
+     * The method signature is as following:
+     *
+     * function cache($key, $value) {
+     *      // Do something funky with it
+     * };
+     *
+     * @param \Closure $cache
+     *
+     * @return void
+     */
+    public static function setCache(\Closure $cache)
+    {
+        self::$_cache = $cache;
+    }
+
+    /**
+     * Sets a closure as a session handler. This is required if you work with
+     * a session scope. The method signature is the same as with {@see Binder::setCache()}
+     *
+     * @param \Closure $sessionHandler
+     *
+     * @return void
+     */
+    public static function setSessionHandler(\Closure $sessionHandler)
+    {
+        self::$_sessionHandler = $sessionHandler;
+    }
+
+    /**
      * Resets the instance of the Binder
      *
      * @return void
@@ -69,6 +114,14 @@ class Binder
     protected function __construct(Reader $reader)
     {
         $this->_reader = $reader;
+
+        self::$_cache = function($key, $value) {
+             // Do nothing
+        };
+
+        self::$_sessionHandler = function($key, $value) {
+             // Do nothing
+        };
     }
 
     /**
