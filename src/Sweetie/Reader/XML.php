@@ -4,6 +4,8 @@
 // +----------------------------------------------------------+
 
 namespace Sweetie\Reader;
+use Sweetie\Blueprint;
+
 use Sweetie\ClassBindings;
 use Sweetie\Reader;
 
@@ -79,6 +81,15 @@ class XML extends Reader
             $class = (string) $attributes['class'];
 
             $blueprint = $this->_createBlueprint($id, $class);
+
+            // scope is optional
+            if (!isset($attributes['scope'])) {
+                $scope = Blueprint::SCOPE_NONE;
+            } else {
+                $scope = (string) $attributes['scope'];
+            }
+
+            $blueprint->setScope($scope);
 
             // Templates first, the blueprint might override some stuff
             if (isset($attributes['template-id'])) {

@@ -51,6 +51,13 @@ class Binder
     protected $_defaultInjector = null;
 
     /**
+     * Holds all objects with a request scope
+     *
+     * @var object[]
+     */
+    protected $_objects = array();
+
+    /**
      * Configures the class to work properly
      *
      * @return void
@@ -75,7 +82,8 @@ class Binder
      * };
      *
      * When given a only a key, the closure should return the value from the
-     * cache. Given both, it should store it.
+     * cache. If nothing has been found, a false should be returned. If you
+     * pass $key and $value, it should store it.
      *
      * @param \Closure $cache
      *
@@ -119,12 +127,13 @@ class Binder
     {
         $this->_reader = $reader;
 
+        // Default behavior
         self::$_cache = function($key, $value = null) {
-             // Do nothing
+             return false;
         };
 
         self::$_sessionHandler = function($key, $value = null) {
-             // Do nothing
+             return false;
         };
     }
 
@@ -148,10 +157,78 @@ class Binder
             throw new \BadMethodCallException($message);
         }
 
-        $bindings = $this->_reader->getBlueprint($id);
+        $blueprint = $this->_reader->getBlueprint($id);
 
-        $injector = $this->_getInjector();
-        return $injector->inject($bindings);
+        switch ($blueprint->getScope()) {
+            case Blueprint::SCOPE_SESSION:
+                $object = $this->_handleSessionScope($blueprint);
+                break;
+
+            case Blueprint::SCOPE_REQUEST:
+                $object = $this->_handleRequestScope($blueprint);
+                break;
+
+            case Blueprint::SCOPE_NONE:
+            default:
+                $object = $this->_handleNoScope($blueprint);
+                break;
+        }
+
+        return $object;
+    }
+
+    /**
+     * Handles a session scope
+     *
+     * @todo unittest the call
+     * @todo unittest with a closure
+     *
+     * @param Blueprint $blueprint
+     *
+     * @return object
+     */
+    protected function _handleSessionScope(Blueprint $blueprint)
+    {
+        $object = self::$_sessionHandler($blueprint->getId());
+        if ($object !== false) {
+            return $object;
+        }
+
+        $object = $this->_getInjector()->inject($blueprint);
+        self::$_sessionHandler($blueprint->getId(), $object);
+
+        return $object;
+    }
+
+    /**
+     * Handles a request scope
+     *
+     * @param Blueprint $blueprint
+     *
+     * @return object
+     */
+    protected function _handleRequestScope(Blueprint $blueprint)
+    {
+        if (isset($this->_objects[$blueprint->getId()])) {
+            return $this->_objects[$blueprint->getId()];
+        }
+
+        $object = $this->_getInjector()->inject($blueprint);
+        $this->_objects[$blueprint->getId()] = $object;
+
+        return $object;
+    }
+
+    /**
+     * Handles a blueprint with no scope
+     *
+     * @param Blueprint $blueprint
+     *
+     * @return object
+     */
+    protected function _handleNoScope(Blueprint $blueprint)
+    {
+        return $this->_getInjector()->inject($blueprint);
     }
 
     /**

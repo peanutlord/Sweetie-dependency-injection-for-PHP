@@ -16,6 +16,16 @@ use Sweetie\Blueprint\Property;
 class Blueprint implements \Iterator, \Countable
 {
 
+    /**#@+
+     * Scope for the binding
+     *
+     * @var string
+     */
+    const SCOPE_REQUEST = 'request';
+    const SCOPE_SESSION = 'session';
+    const SCOPE_NONE = 'NONE';
+    /**#@-*/
+
     /**
      * Holds the id the blueprint
      *
@@ -45,6 +55,13 @@ class Blueprint implements \Iterator, \Countable
     protected $_head = 0;
 
     /**
+     * Holds the scope of the blueprint
+     *
+     * @var string
+     */
+    protected $_scope = self::SCOPE_NONE;
+
+    /**
      *
      *
      */
@@ -52,6 +69,16 @@ class Blueprint implements \Iterator, \Countable
     {
         $this->_id = $id;
         $this->_class = $class;
+    }
+
+    /**
+     * Returns the id of the blueprint
+     *
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->_id;
     }
 
     /**
@@ -101,6 +128,35 @@ class Blueprint implements \Iterator, \Countable
         }
 
         return false;
+    }
+
+    /**
+     * Sets the scope of the blueprint
+     *
+     * @todo unittest
+     * @param string $scope
+     *
+     * @return void
+     */
+    public function setScope($scope = self::SCOPE_NONE)
+    {
+        $scopes = array(self::SCOPE_NONE, self::SCOPE_REQUEST, self::SCOPE_SESSION);
+
+        if (!in_array($scope, $scopes)) {
+            throw new \InvalidArgumentException(sprintf('Invalid scope "%s"', $scope));
+        }
+
+        $this->_scope = $scope;
+    }
+
+    /**
+     * Return the scope of the blueprint
+     *
+     * @return string
+     */
+    public function getScope()
+    {
+        return $this->_scope;
     }
 
     /**
