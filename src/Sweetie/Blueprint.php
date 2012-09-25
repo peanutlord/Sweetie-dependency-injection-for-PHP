@@ -23,7 +23,7 @@ class Blueprint implements \Iterator, \Countable
      */
     const SCOPE_REQUEST = 'request';
     const SCOPE_SESSION = 'session';
-    const SCOPE_NONE = 'NONE';
+    const SCOPE_NONE = 'none';
     /**#@-*/
 
     /**
