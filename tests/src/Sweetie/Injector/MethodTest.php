@@ -30,7 +30,8 @@ class MethodTest extends \TestCase
     {
         $foo = $this->getMock('Foo', array('setBar'));
         $foo->expects($this->once())
-            ->method('setBar');
+            ->method('setBar')
+            ->with($this->isInstanceOf('Bar'));
 
         $blueprint = new Blueprint('myId', get_class($foo));
         $blueprint->addProperty('bar', 'Bar');
@@ -38,7 +39,8 @@ class MethodTest extends \TestCase
         $methodInjector = $this->getMock('Sweetie\Injector\\Method', array('_getDependency', '_createObject'), array(), '', false);
         $methodInjector->expects($this->once())
                        ->method('_getDependency')
-                       ->with($this->isInstanceOf('Sweetie\\Blueprint\\Property'));
+                       ->with($this->isInstanceOf('Sweetie\\Blueprint\\Property'))
+                       ->will($this->returnValue(new Bar()));
 
         $methodInjector->expects($this->once())
                        ->method('_createObject')
