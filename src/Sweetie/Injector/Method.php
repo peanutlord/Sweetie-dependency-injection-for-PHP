@@ -29,6 +29,11 @@ class Method extends Injector
 
         foreach ($blueprint as $blueprintProperty) {
             $method = sprintf('set%s', ucfirst($blueprintProperty->getName()));
+
+            if (!method_exists($actualObject, $method)) {
+                throw new \BadMethodCallException(sprintf('Unknown method "%s"', $method));
+            }
+
             $actualObject->$method($this->_getDependency($blueprintProperty));
         }
 

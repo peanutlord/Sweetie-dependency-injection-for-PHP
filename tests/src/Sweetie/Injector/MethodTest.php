@@ -17,16 +17,7 @@ use Sweetie\Blueprint;
 class MethodTest extends \TestCase
 {
 
-    /**
-     * @see PHPUnit_Framework_TestCase::setUp()
-     */
-    public function setUp()
-    {
-        // Reader must be purged
-        Binder::resetInstance();
-    }
-
-    public function testMethodCall()
+    public function testMethodGetsCalled()
     {
         $foo = $this->getMock('Foo', array('setBar'));
         $foo->expects($this->once())
@@ -46,6 +37,22 @@ class MethodTest extends \TestCase
                        ->method('_createObject')
                        ->with($this->isInstanceOf('Sweetie\\Blueprint'))
                        ->will($this->returnValue($foo));
+
+        $methodInjector->inject($blueprint);
+    }
+
+    public function testNotExistingMetodTriggersException()
+    {
+        $this->setExpectedException('BadMethodCallException');
+
+        $blueprint = new Blueprint('myId', 'Foo');
+        $blueprint->addProperty('baz', 'Bar');
+
+        $methodInjector = $this->getMock('Sweetie\Injector\\Method', array('_createObject'), array(), '', false);
+        $methodInjector->expects($this->once())
+                       ->method('_createObject')
+                        ->with($this->isInstanceOf('Sweetie\\Blueprint'))
+                        ->will($this->returnValue(new Foo()));
 
         $methodInjector->inject($blueprint);
     }

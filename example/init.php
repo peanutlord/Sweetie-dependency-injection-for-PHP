@@ -30,6 +30,11 @@ class Foo
         return $this->bar;
     }
 
+    public function setBar(\Bar $bar)
+    {
+        $this->bar = $bar;
+    }
+
 }
 
 interface hello

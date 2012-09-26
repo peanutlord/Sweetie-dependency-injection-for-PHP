@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sweetie>
+    <option key="injector" value="Sweetie\Injector\Method" />
+    
+    <bindings>
+        <!-- This blueprint cant even afford properties... -->
+        <blueprint id="someId" class="Foo">
+            <property name="bar" ref="Bar" />
+        </blueprint>
+        
+        <blueprint id="missingMethod" class="Foo">
+            <property name="baz" ref="Bar" />
+        </blueprint>
+        
+    </bindings>
+    
+</sweetie>
