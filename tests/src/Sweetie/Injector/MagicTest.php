@@ -72,7 +72,7 @@ class MagicTest extends \TestCase
                ->method('getBlueprint')
                ->will($this->returnCallback($f));
 
-        $instance = Binder::boostrap($reader);
+        $instance = Binder::bootstrap($reader);
 
         $magic = new Magic($instance);
         $magic->inject($blueprintOne);
@@ -103,7 +103,7 @@ XML;
         $reader = new XML();
         $reader->load('/tmp/bind.xml');
 
-        Binder::boostrap($reader);
+        Binder::bootstrap($reader);
         Binder::factory('stubTest');
     }
 

@@ -49,11 +49,11 @@ class Binder
      *
      * @return void
      */
-    public static function boostrap(Reader $reader)
+    public static function bootstrap(Reader $reader)
     {
         self::registerDefaultScopes();
 
-        // @todo allow multiple boostrap calls to change configuration?
+        // @todo allow multiple bootstrap calls to change configuration?
         if (static::$_instance === null) {
             static::$_instance = new self($reader);
         }
@@ -128,13 +128,13 @@ class Binder
         }
 
         $blueprint = $this->_reader->getBlueprint($id);
-        $scope = $blueprint->getScope();
+        $scopeType = $blueprint->getScope();
 
-        if (!isset(self::$_scopes[$scope])) {
+        if (!isset(self::$_scopes[$scopeType])) {
             throw new \InvalidArgumentException(sprintf('Unknown scope "%s"', $scope));
         }
 
-        $scope = self::$_scopes[$scope];
+        $scope = self::$_scopes[$scopeType];
         if ($scope->contains($blueprint->getId())) {
             return $scope->retrieve($blueprint->getId());
         }

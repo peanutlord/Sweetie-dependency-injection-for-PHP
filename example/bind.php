@@ -19,7 +19,7 @@ spl_autoload_register($f);
 $reader = new \Sweetie\Reader\XML();
 $reader->load('bind.xml');
 
-Binder::boostrap($reader);
+Binder::bootstrap($reader);
 
 /* @var $foo Foo */
 $foo = Binder::factory('withIdReference');
