@@ -140,12 +140,6 @@ class Blueprint implements \Iterator, \Countable
      */
     public function setScope($scope = self::SCOPE_NONE)
     {
-        $scopes = array(self::SCOPE_NONE, self::SCOPE_REQUEST, self::SCOPE_SESSION);
-
-        if (!in_array($scope, $scopes)) {
-            throw new \InvalidArgumentException(sprintf('Invalid scope "%s"', $scope));
-        }
-
         $this->_scope = $scope;
     }
 

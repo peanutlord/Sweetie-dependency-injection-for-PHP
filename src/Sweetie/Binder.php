@@ -131,7 +131,7 @@ class Binder
         $scopeType = $blueprint->getScope();
 
         if (!isset(self::$_scopes[$scopeType])) {
-            throw new \InvalidArgumentException(sprintf('Unknown scope "%s"', $scope));
+            throw new \InvalidArgumentException(sprintf('Unknown scope "%s"', $scopeType));
         }
 
         $scope = self::$_scopes[$scopeType];
