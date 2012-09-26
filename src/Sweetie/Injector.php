@@ -53,6 +53,20 @@ abstract class Injector
         return $this->_binder;
     }
 
+
+    /**
+     * Creates an object from a blueprint
+     *
+     * @param Blueprint $blueprint
+     *
+     * @return object
+     */
+    protected function _createObject(Blueprint $blueprint)
+    {
+        $class = $blueprint->getClass();
+        return new $class();
+    }
+
     /**
      * Returns a dependency defined the blueprint
      *

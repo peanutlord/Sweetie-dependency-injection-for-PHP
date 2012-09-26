@@ -25,8 +25,7 @@ class Magic extends Injector
      */
     public function inject(Blueprint $blueprint)
     {
-        $class = $blueprint->getClass();
-        $actualObject = new $class();
+        $actualObject = $this->_createObject($blueprint);
 
         $reflection = new \ReflectionObject($actualObject);
         foreach ($blueprint as $blueprintProperty) {

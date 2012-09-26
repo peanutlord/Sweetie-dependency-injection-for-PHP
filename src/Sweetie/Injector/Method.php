@@ -25,8 +25,7 @@ class Method extends Injector
      */
     public function inject(Blueprint $blueprint)
     {
-        $class = $blueprint->getClass();
-        $actualObject = new $class();
+        $actualObject = $this->_createObject($blueprint);
 
         foreach ($blueprint as $blueprintProperty) {
             $method = sprintf('set%s', ucfirst($blueprintProperty->getName()));
