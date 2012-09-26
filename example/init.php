@@ -1,4 +1,14 @@
 <?php
+
+$f = function($name) {
+    $parts = explode('\\', $name);
+
+    $path = sprintf('../../src/%s.php', implode(DIRECTORY_SEPARATOR, $parts));
+    include $path;
+};
+
+spl_autoload_register($f);
+
 /* Dummy Classes */
 class Foo
 {
