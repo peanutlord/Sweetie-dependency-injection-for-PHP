@@ -44,12 +44,49 @@ abstract class Reader
     protected $_templates = array();
 
     /**
+     * Holds the cache handler for storing data
+     *
+     * @var \Closure
+     */
+    protected static $_cacheHandler = null;
+
+    /**
+     * Sets the cache handler.
+     *
+     * The handler is a thin wrapper over a libary of your choice to store
+     * the data inside a cache. The method signature (and usage) is
+     * the same as with the session scope handler.
+     *
+     * @param \Closure $handler
+     */
+    public function setCacheHandler(\Closure $handler)
+    {
+        self::$_cacheHandler = $handler;
+    }
+
+    /**
      * Inits the stack for parsing
      *
      */
     public function __construct()
     {
         $this->_stack = new Stack();
+
+        if (self::$_cacheHandler === null) {
+            $this->_setDefaultCacheHandler();
+        }
+    }
+
+    /**
+     * Sets a default cache handler which does in fact nothing
+     *
+     * @return void
+     */
+    protected function _setDefaultCacheHandler()
+    {
+        self::$_cacheHandler = function($key, $value = null) {
+            return false;
+        };
     }
 
     /**
@@ -59,7 +96,14 @@ abstract class Reader
      *
      * @return void
      */
-    public function load($file) {
+    public function load($file)
+    {
+        $hash = $this->_calculateHash($file);
+        if ($this->_hasCacheHit($hash)) {
+            $this->_loadBlueprintsFromCache($hash);
+            return;
+        }
+
         if (!is_readable($file)) {
             $message = sprintf('File "%s" not found or not readable', $file);
             throw new \InvalidArgumentException($message);
@@ -75,6 +119,60 @@ abstract class Reader
                 throw new \InvalidArgumentException($message);
             }
         }
+
+        // It's safe now to store the data inside the cache.
+        // Also the cache should take care of serialization
+        $this->_invokeCache($hash, $this->_blueprints);
+    }
+
+    /**
+     * Returns a hash of the file
+     *
+     * @param string $file
+     *
+     * @return string
+     */
+    protected function _calculateHash($file)
+    {
+        return md5($file);
+    }
+
+    /**
+     * Wrapper because we can't use the properly directly as closure
+     *
+     * @param string $key
+     * @param mixed|null $value
+     *
+     * @return mixed
+     */
+    protected function _invokeCache($key, $value = null)
+    {
+        $closure = self::$_cacheHandler;
+        return $closure($key, $value);
+    }
+
+    /**
+     *
+     * @param string $hash
+     */
+    protected function _hasCacheHit($hash)
+    {
+        return $this->_invokeCache($hash) !== false;
+    }
+
+    /**
+     * Loads the blueprints invoking the cache handler.
+     *
+     * Important note: make sure Reader::_hasCacheHit was called before,
+     * the closure might return a false when nothing was found inside the cache
+     *
+     * @param string $hash
+     *
+     * @return void
+     */
+    protected function _loadBlueprintsFromCache($hash)
+    {
+        $this->_blueprints = $this->_invokeCache($hash);
     }
 
     /**
