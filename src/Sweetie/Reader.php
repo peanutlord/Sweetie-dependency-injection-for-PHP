@@ -59,7 +59,7 @@ abstract class Reader
      *
      * @param \Closure $handler
      */
-    public function setCacheHandler(\Closure $handler)
+    public static function setCacheHandler(\Closure $handler)
     {
         self::$_cacheHandler = $handler;
     }
@@ -127,6 +127,9 @@ abstract class Reader
 
     /**
      * Returns a hash of the file
+     *
+     * @todo perhaps the content of the file should be used? It would prevent
+     *       that files with the same name generate the same hash
      *
      * @param string $file
      *
