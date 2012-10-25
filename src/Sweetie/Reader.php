@@ -141,7 +141,7 @@ abstract class Reader
     }
 
     /**
-     * Wrapper because we can't use the properly directly as closure
+     * Wrapper because we can't use the property directly as closure
      *
      * @param string $key
      * @param mixed|null $value
