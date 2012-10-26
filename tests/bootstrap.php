@@ -18,7 +18,9 @@ $f = function($name) {
     $parts = explode('\\', $name);
 
     $path = sprintf('%s/%s.php', SWEETIE_PATH, implode(DIRECTORY_SEPARATOR, $parts));
-    include $path;
+    if (file_exists($path)) {
+        include $path;
+    }
 };
 
 spl_autoload_register($f);
