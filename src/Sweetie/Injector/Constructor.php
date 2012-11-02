@@ -13,30 +13,25 @@ use Sweetie\ClassBindings;
 use Sweetie\Injector;
 
 /**
- * Injector which works with "setSomething()" methods
+ * Injector which works with the constructor of the object
  *
  * @author Christopher Marchfelder <marchfelder@googlemail.com>
  * @license MIT
  */
-class Method extends Injector
+class Constructor extends Injector
 {
 	/**
      * @see Sweetie.Injector::inject()
      */
     public function inject(Blueprint $blueprint)
     {
-        $actualObject = $this->_createObject($blueprint);
+        $ref = new \ReflectionClass($blueprint->getClass());
 
+        $objectsToInject = array();
         foreach ($blueprint as $blueprintProperty) {
-            $method = sprintf('set%s', ucfirst($blueprintProperty->getName()));
-
-            if (!method_exists($actualObject, $method)) {
-                throw new \BadMethodCallException(sprintf('Unknown method "%s"', $method));
-            }
-
-            $actualObject->$method($this->_getDependency($blueprintProperty));
+            $objectsToInject[] = $this->_getDependency($blueprintProperty);
         }
 
-        return $actualObject;
+        return $ref->newInstanceArgs($objectsToInject);
     }
 }

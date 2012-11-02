@@ -41,7 +41,7 @@ class MethodTest extends \TestCase
         $methodInjector->inject($blueprint);
     }
 
-    public function testNotExistingMetodTriggersException()
+    public function testNotExistingMethodTriggersException()
     {
         $this->setExpectedException('BadMethodCallException');
 
@@ -51,8 +51,8 @@ class MethodTest extends \TestCase
         $methodInjector = $this->getMock('Sweetie\Injector\\Method', array('_createObject'), array(), '', false);
         $methodInjector->expects($this->once())
                        ->method('_createObject')
-                        ->with($this->isInstanceOf('Sweetie\\Blueprint'))
-                        ->will($this->returnValue(new Foo()));
+                       ->with($this->isInstanceOf('Sweetie\\Blueprint'))
+                       ->will($this->returnValue(new Foo()));
 
         $methodInjector->inject($blueprint);
     }
