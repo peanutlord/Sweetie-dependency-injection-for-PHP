@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sweetie>
+    <option key="injector" value="Sweetie\Injector\Constructor" />
+    
+    <bindings>
+        <!-- This blueprint cant even afford properties... -->
+        <blueprint id="someId" class="Foo">
+            <property name="bar" ref="Bar" />
+        </blueprint>
+        
+    </bindings>
+    
+</sweetie>
