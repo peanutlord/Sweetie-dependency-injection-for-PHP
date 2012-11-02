@@ -21,6 +21,18 @@ class Foo
     protected $bar;
 
     /**
+     * Constructor for funky stuff
+     *
+     * @param \Bar $bar
+     */
+    public function __construct(\Bar $bar = null)
+    {
+        if ($bar !== null) {
+            $this->setBar($bar);
+        }
+    }
+
+    /**
      * Returns the Bar Object
      *
      * @return Bar
